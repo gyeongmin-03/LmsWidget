@@ -20,7 +20,7 @@ class LmsWidget : GlanceAppWidget() {
         private val thinMode = DpSize(120.dp, 120.dp)
         private val smallMode = DpSize(184.dp, 184.dp)
         private val mediumMode = DpSize(260.dp, 200.dp)
-        private val largeMode = DpSize(260.dp, 280.dp)
+        private val largeMode = DpSize(350.dp, 350.dp)
     }
 
     override val sizeMode: SizeMode = SizeMode.Responsive(
@@ -58,7 +58,10 @@ class LmsWidget : GlanceAppWidget() {
 
 @Composable
 fun Test(){
-    Text("준비 중")
+    AppWidgetColumn {
+        Text("준비 중")
+        Button("다시 로딩", actionRunCallback<UpdateLmsAction>())
+    }
 }
 
 
@@ -98,7 +101,7 @@ fun LargeTextBox(data: LmsData){
                 style = TextStyle(fontSize = 23.sp)
             )
             Text(
-                text = data.date +" 까지",
+                text = if(data.date != "") {data.date +" 까지"} else "",
                 maxLines = 3,
                 style = TextStyle(fontSize = 13.sp)
             )
