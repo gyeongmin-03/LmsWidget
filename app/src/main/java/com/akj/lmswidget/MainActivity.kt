@@ -11,11 +11,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.akj.lmswidget.glance.AppWidgetColumn
 import com.akj.lmswidget.ui.theme.LmsWidgetTheme
 
 class MainActivity : ComponentActivity() {
@@ -47,36 +50,13 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     LmsWidgetTheme {
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(8.dp)
-        ) {
-            Column(modifier = Modifier.width(300.dp)) {
-                Text(
-                    "2023 온라인 코딩 특강",
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = TextStyle(fontSize = 15.sp)
-                )
-                Text(
-                    "[온라인강의] 변수 선언 및 초기화, Code naming convention",
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    style = TextStyle(fontSize = 17.sp)
-                )
-            }
-            Column(modifier = Modifier.width(100.dp)) {
-                Text(
-                    "D-333",
-                    style = TextStyle(fontSize = 23.sp)
-                )
-                Text(
-                    "2024.01.31\n23:59"+" 까지",
-                    maxLines = 3,
-                    style = TextStyle(fontSize = 13.sp)
-                )
-            }
+        Column {
+            Text("과제제출과 과제제출울 왜해요 시발")
+            Text("객체지향프로그래밍", style = TextStyle(fontSize = 10.sp))
+            Text("2022.02.01 15:11", style = TextStyle(fontSize = 10.sp))
+            Text("D-Day", modifier = Modifier.fillMaxWidth(),textAlign = TextAlign.End)
+
+            Text("최근갱신 : 2022.05.05 12:12")
         }
     }
 }
