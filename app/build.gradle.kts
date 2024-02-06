@@ -59,11 +59,13 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material")
     implementation("org.jsoup:jsoup:1.17.2")
     implementation("androidx.glance:glance-appwidget:1.0.0")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.20")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
 
     testImplementation("junit:junit:4.13.2")

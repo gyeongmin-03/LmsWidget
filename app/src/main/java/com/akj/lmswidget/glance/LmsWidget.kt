@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.glance.Button
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
@@ -39,6 +38,7 @@ import java.text.SimpleDateFormat
 
 
 class LmsWidget : GlanceAppWidget() {
+
     companion object {  //가로, 세로
         private val thinMode = DpSize(120.dp, 120.dp)   //2x2
         private val smallMode = DpSize(260.dp, 160.dp)  //
@@ -67,8 +67,6 @@ class LmsWidget : GlanceAppWidget() {
 
         val size = LocalSize.current
         GlanceTheme {
-//            LmsTest()
-
             when (size) {
                 thinMode -> LmsThin(myData, timeFormat)
                 smallMode -> LmsSmall(myData, timeFormat)
@@ -215,8 +213,7 @@ fun LargeTextBox(data: LmsData){
 
 
 
-
-object UpdateLmsData : ActionCallback{
+object UpdateLmsData : ActionCallback {
     override suspend fun onAction(
         context: Context,
         glanceId: GlanceId,
@@ -228,10 +225,6 @@ object UpdateLmsData : ActionCallback{
 
             Thread.sleep(3*1000L)
 
-
-            //state 갱신 코드
-
-
             LmsWidget().update(context, glanceId)   //내용이 바뀌었을 때만 실행됨
         } catch (e: Exception){
             Log.e("ActionCallback에러", "에러 내용: ${e.message}")
@@ -239,7 +232,7 @@ object UpdateLmsData : ActionCallback{
     }
 }
 
-object UpdateRefresh : ActionCallback{
+object UpdateRefresh : ActionCallback {
     override suspend fun onAction(
         context: Context,
         glanceId: GlanceId,

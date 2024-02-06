@@ -3,35 +3,37 @@ package com.akj.lmswidget
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.modifier.modifierLocalConsumer
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.akj.lmswidget.glance.AppWidgetColumn
 import com.akj.lmswidget.ui.theme.LmsWidgetTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             LmsWidgetTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colors.background
                 ) {
-                    Greeting("Android")
+                    WriteData()
                 }
             }
         }
@@ -39,24 +41,33 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun WriteData() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+        var Id by remember { mutableStateOf("") }
+        var pwd by remember { mutableStateOf("")}
+
+
+        Column {
+            TextField(
+                value = Id,
+                onValueChange = { Id = it},
+                )
+            TextField(
+                value = pwd,
+                onValueChange = {pwd = it}
+            )
+
+            Button(
+                onClick = {},
+                content = {Text("로그인")}
+            )
+        }
+    }
 }
+
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    LmsWidgetTheme {
-        Column {
-            Text("과제제출과 과제제출울 왜해요 시발")
-            Text("객체지향프로그래밍", style = TextStyle(fontSize = 10.sp))
-            Text("2022.02.01 15:11", style = TextStyle(fontSize = 10.sp))
-            Text("D-Day", modifier = Modifier.fillMaxWidth(),textAlign = TextAlign.End)
 
-            Text("최근갱신 : 2022.05.05 12:12")
-        }
-    }
 }
