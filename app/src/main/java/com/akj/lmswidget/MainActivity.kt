@@ -1,6 +1,8 @@
 package com.akj.lmswidget
 
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
@@ -26,14 +28,23 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val shared = getSharedPreferences("userData", MODE_PRIVATE)
+        val editor = shared.edit()
+
+
         setContent {
+            val login by remember {
+                mutableStateOf(shared.getBoolean("login", false))
+            }
+
             LmsWidgetTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    WriteData()
+                    if(login)  { ReadUserData(shared) }
+                    else { WriteUserData(editor) }
                 }
             }
         }
@@ -41,24 +52,67 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun WriteData() {
+fun ReadUserData(shared : SharedPreferences){
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-        var Id by remember { mutableStateOf("") }
+        val id = shared.getString("id", "")
+        val pwd = shared.getString("pwd", "")
+        val editor = shared.edit()
+
+        if (id.isNullOrEmpty() || pwd.isNullOrEmpty()){
+            Text("ReadUserData 오류 \n id 또는 pwd를 로컬데이터에서 가져오지 못함")
+            Log.d("ReadUserData 오류", "id 또는 pwd를 로컬데이터에서 가져오지 못함")
+        } else{
+            Column {
+                Text(id)
+                Text(pwd)
+            }
+            Button(
+                onClick = {
+                    editor.putString("id", "")
+                    editor.putString("pwd", "")
+                    editor.putBoolean("login", false)
+                    editor.apply()
+                },
+                content = {Text("다시 설정")}
+            )
+        }
+
+    }
+}
+
+
+
+@Composable
+fun WriteUserData(editor : SharedPreferences.Editor) {
+
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+        var id by remember { mutableStateOf("") }
         var pwd by remember { mutableStateOf("")}
 
 
         Column {
             TextField(
-                value = Id,
-                onValueChange = { Id = it},
+                value = id,
+                onValueChange = { id = it},
+                placeholder = {
+                        Text("학번")
+                    }
                 )
             TextField(
                 value = pwd,
-                onValueChange = {pwd = it}
+                onValueChange = {pwd = it},
+                placeholder = {
+                    Text("비밀번호")
+                }
             )
 
             Button(
-                onClick = {},
+                onClick = {
+                    editor.putString("id", id)
+                    editor.putString("pwd", pwd)
+                    editor.putBoolean("login", true)
+                    editor.commit()
+                          },
                 content = {Text("로그인")}
             )
         }

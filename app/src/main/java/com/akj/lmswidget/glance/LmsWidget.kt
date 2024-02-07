@@ -2,6 +2,7 @@ package com.akj.lmswidget.glance
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -34,7 +35,13 @@ import androidx.glance.text.TextStyle
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.akj.lmswidget.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.time.delay
 import java.text.SimpleDateFormat
+import java.time.Duration
+
 
 
 class LmsWidget : GlanceAppWidget() {
@@ -158,6 +165,16 @@ fun Test(){
 
 @Composable
 fun LmsLarge(myData: LmsTop5, time: String){
+    var isButtonEnabled = true //갱신되면서 이것도 초기화되는 듯 -> 다른 뷰모델 등으로 가져가야 함
+
+    fun disableButtonForOneMinute() {
+        isButtonEnabled = false
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(Duration.ofMinutes(1))
+            isButtonEnabled = true
+        }
+    }
+
     AppWidgetColumn {
         LargeTextBox(myData.first)
         LargeTextBox(myData.second)
@@ -169,8 +186,13 @@ fun LmsLarge(myData: LmsTop5, time: String){
             Image(
                 provider = ImageProvider(R.drawable.refresh),
                 contentDescription = "Refresh",
-                modifier = GlanceModifier
-                    .clickable(actionRunCallback<UpdateLmsData>())
+                modifier = GlanceModifier.clickable{
+                            if(isButtonEnabled){
+                                disableButtonForOneMinute()
+                                actionRunCallback<UpdateLmsData>()
+                            }
+                            else{ actionRunCallback<ToastAction>() }
+                }
             )
         }
     }
@@ -232,16 +254,29 @@ object UpdateLmsData : ActionCallback {
     }
 }
 
+
 object UpdateRefresh : ActionCallback {
     override suspend fun onAction(
         context: Context,
         glanceId: GlanceId,
         parameters: ActionParameters
     ) {
-        TODO("Not yet implemented")
+
     }
 }
 
+
+object ToastAction : ActionCallback{
+    override suspend fun onAction(
+        context: Context,
+        glanceId: GlanceId,
+        parameters: ActionParameters
+    ) {
+        Toast.makeText(context , "ads", Toast.LENGTH_SHORT).show()
+        Log.d("Toast 실행", "ToastAction이 실행됨")
+        LmsWidget().update(context, glanceId)
+    }
+}
 
 
 //새로운 onClick 함수를 만든다.

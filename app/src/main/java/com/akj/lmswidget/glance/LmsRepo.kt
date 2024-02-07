@@ -1,5 +1,6 @@
 package com.akj.lmswidget.glance
 
+import android.content.Context
 import android.util.Log
 import org.jsoup.Connection
 import org.jsoup.Jsoup
@@ -23,11 +24,18 @@ data class LmsData(
 
 
 object LmsRepo {
+    fun getLmsData(context : Context) : LmsTop5 {
+        val shared = context.getSharedPreferences("userData", Context.MODE_PRIVATE)
+        val id = shared.getString("id", "")
+        val pwd = shared.getString("pwd", "")
 
-    fun getLmsData() : LmsTop5 {
+        if(id.isNullOrEmpty() || pwd.isNullOrEmpty()){
+            Log.d("getLmsData() 오류", "id 혹은 pwd의 로컬데이터를 가져오지 못함")
+        }
+
         val data = hashMapOf(
-            "usr_id" to "",
-            "usr_pwd" to ""
+            "usr_id" to id,
+            "usr_pwd" to pwd
         )
 
 

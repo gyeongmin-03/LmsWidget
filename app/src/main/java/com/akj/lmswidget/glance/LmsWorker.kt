@@ -19,7 +19,7 @@ class LmsWorker(
         val glanceIds = manager.getGlanceIds(LmsWidget::class.java)
 
         return try {
-            setWidgetState(glanceIds, LmsRepo.getLmsData())
+            setWidgetState(glanceIds, LmsRepo.getLmsData(context))
             Log.d("DDDD", "doWork() 실행")
             Result.success()
         } catch (e : Exception){
