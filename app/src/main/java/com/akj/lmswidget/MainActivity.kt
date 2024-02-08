@@ -29,22 +29,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val shared = getSharedPreferences("userData", MODE_PRIVATE)
-        val editor = shared.edit()
 
 
         setContent {
-            val login by remember {
-                mutableStateOf(shared.getBoolean("login", false))
-            }
-
             LmsWidgetTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    if(login)  { ReadUserData(shared) }
-                    else { WriteUserData(editor) }
+                    mainAct(shared)
                 }
             }
         }
@@ -52,7 +46,20 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun ReadUserData(shared : SharedPreferences){
+fun mainAct(shared: SharedPreferences){
+    val editor = shared.edit()
+
+    var login by remember {
+        mutableStateOf(shared.getBoolean("login", false))
+    }
+
+    if(login)  { ReadUserData(shared){login = false} }
+    else { WriteUserData(editor){login = true} }
+}
+
+
+@Composable
+fun ReadUserData(shared : SharedPreferences, command : () -> Unit){
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
         val id = shared.getString("id", "")
         val pwd = shared.getString("pwd", "")
@@ -71,6 +78,7 @@ fun ReadUserData(shared : SharedPreferences){
                     editor.putString("id", "")
                     editor.putString("pwd", "")
                     editor.putBoolean("login", false)
+                    command
                     editor.apply()
                 },
                 content = {Text("다시 설정")}
@@ -83,7 +91,7 @@ fun ReadUserData(shared : SharedPreferences){
 
 
 @Composable
-fun WriteUserData(editor : SharedPreferences.Editor) {
+fun WriteUserData(editor : SharedPreferences.Editor, command : () -> Unit) {
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
         var id by remember { mutableStateOf("") }
@@ -111,6 +119,7 @@ fun WriteUserData(editor : SharedPreferences.Editor) {
                     editor.putString("id", id)
                     editor.putString("pwd", pwd)
                     editor.putBoolean("login", true)
+                    command
                     editor.commit()
                           },
                 content = {Text("로그인")}

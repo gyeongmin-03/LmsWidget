@@ -46,6 +46,8 @@ object LmsRepo {
             .data(data)
             .method(Connection.Method.POST).execute()
 
+        
+        //만약 login 페이지에 "로그아웃" 단어가 없으면 다시 로그인을 요청해야함
 
 
         val popData2 = hashMapOf(
