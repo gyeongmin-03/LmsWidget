@@ -1,8 +1,9 @@
 package com.akj.lmswidget
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.akj.lmswidget.ui.theme.LmsWidgetTheme
 
@@ -29,16 +31,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val shared = getSharedPreferences("userData", MODE_PRIVATE)
-
+        val defaultLogin = shared.getBoolean("login", false)
 
         setContent {
+
             LmsWidgetTheme {
+
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    mainAct(shared)
+                    MainAct(shared, defaultLogin)
                 }
             }
         }
@@ -46,11 +50,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun mainAct(shared: SharedPreferences){
+fun MainAct(shared: SharedPreferences, defaultLogin : Boolean){
     val editor = shared.edit()
 
     var login by remember {
-        mutableStateOf(shared.getBoolean("login", false))
+        mutableStateOf(defaultLogin)
     }
 
     if(login)  { ReadUserData(shared){login = false} }
@@ -66,24 +70,26 @@ fun ReadUserData(shared : SharedPreferences, command : () -> Unit){
         val editor = shared.edit()
 
         if (id.isNullOrEmpty() || pwd.isNullOrEmpty()){
-            Text("ReadUserData 오류 \n id 또는 pwd를 로컬데이터에서 가져오지 못함")
-            Log.d("ReadUserData 오류", "id 또는 pwd를 로컬데이터에서 가져오지 못함")
+            Text("ReadUserData 오류")
+            Text("id 또는 pwd를 로컬데이터에서 가져오지 못함")
+            Text("다시 로그인 해주세요")
         } else{
             Column {
                 Text(id)
                 Text(pwd)
             }
-            Button(
-                onClick = {
-                    editor.putString("id", "")
-                    editor.putString("pwd", "")
-                    editor.putBoolean("login", false)
-                    command
-                    editor.apply()
-                },
-                content = {Text("다시 설정")}
-            )
         }
+
+        Button(
+            onClick = {
+                editor.putString("id", "")
+                editor.putString("pwd", "")
+                editor.putBoolean("login", false)
+                command()
+                editor.apply()
+            },
+            content = {Text("다시 설정")}
+        )
 
     }
 }
@@ -92,6 +98,7 @@ fun ReadUserData(shared : SharedPreferences, command : () -> Unit){
 
 @Composable
 fun WriteUserData(editor : SharedPreferences.Editor, command : () -> Unit) {
+    val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
         var id by remember { mutableStateOf("") }
@@ -116,16 +123,31 @@ fun WriteUserData(editor : SharedPreferences.Editor, command : () -> Unit) {
 
             Button(
                 onClick = {
-                    editor.putString("id", id)
-                    editor.putString("pwd", pwd)
-                    editor.putBoolean("login", true)
-                    command
-                    editor.commit()
-                          },
+                    if(isCorrect(id, pwd, context)){
+                        editor.putString("id", id)
+                        editor.putString("pwd", pwd)
+                        editor.putBoolean("login", true)
+                        command()
+                        editor.commit()    
+                    } },
                 content = {Text("로그인")}
             )
         }
     }
+}
+
+
+fun isCorrect(id: String, pwd : String, context : Context) : Boolean{
+    if(id.isBlank()){
+        Toast.makeText(context, "학번을 바르게 입력해주세요", Toast.LENGTH_LONG).show()
+        return false
+    }
+    else if (pwd.isBlank()){
+        Toast.makeText(context, "비밀번호를 바르게 입력해주세요", Toast.LENGTH_LONG).show()
+        return false
+    }
+
+    return true
 }
 
 
