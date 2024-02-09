@@ -23,7 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import com.akj.lmswidget.glance.LmsRepo
 import com.akj.lmswidget.ui.theme.LmsWidgetTheme
+import org.jsoup.Jsoup
 
 
 class MainActivity : ComponentActivity() {
@@ -124,11 +126,13 @@ fun WriteUserData(editor : SharedPreferences.Editor, command : () -> Unit) {
             Button(
                 onClick = {
                     if(isCorrect(id, pwd, context)){
-                        editor.putString("id", id)
-                        editor.putString("pwd", pwd)
-                        editor.putBoolean("login", true)
-                        command()
-                        editor.commit()    
+                        if(isSucceedLogin(id, pwd, context)) {
+                            editor.putString("id", id)
+                            editor.putString("pwd", pwd)
+                            editor.putBoolean("login", true)
+                            command()
+                            editor.commit()
+                        }
                     } },
                 content = {Text("로그인")}
             )
@@ -144,6 +148,23 @@ fun isCorrect(id: String, pwd : String, context : Context) : Boolean{
     }
     else if (pwd.isBlank()){
         Toast.makeText(context, "비밀번호를 바르게 입력해주세요", Toast.LENGTH_LONG).show()
+        return false
+    }
+
+    return true
+}
+
+fun isSucceedLogin(id: String, pwd: String, context: Context) : Boolean{
+    val cookie = LmsRepo.getLmsCookie(id, pwd)
+
+    //메인 페이지 접속
+    val mainPage = Jsoup
+        .connect("https://lms.pknu.ac.kr/ilos/main/main_form.acl")
+        .cookies(cookie)
+        .get()
+
+    if ("로그아웃" !in mainPage.html()){
+        Toast.makeText(context, "로그인에 실패하였습니다.", Toast.LENGTH_LONG).show()
         return false
     }
 

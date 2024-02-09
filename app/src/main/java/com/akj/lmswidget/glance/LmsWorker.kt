@@ -17,9 +17,10 @@ class LmsWorker(
     override suspend fun doWork(): Result {
         val manager = GlanceAppWidgetManager(context)
         val glanceIds = manager.getGlanceIds(LmsWidget::class.java)
+        val shared = context.getSharedPreferences("userData", Context.MODE_PRIVATE)
 
         return try {
-            setWidgetState(glanceIds, LmsRepo.getLmsData(context))
+            setWidgetState(glanceIds, LmsRepo.getLmsData(shared))
             Log.d("DDDD", "doWork() 실행")
             Result.success()
         } catch (e : Exception){

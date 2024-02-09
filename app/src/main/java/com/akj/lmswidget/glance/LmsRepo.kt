@@ -1,6 +1,6 @@
 package com.akj.lmswidget.glance
 
-import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import org.jsoup.Connection
 import org.jsoup.Jsoup
@@ -24,11 +24,7 @@ data class LmsData(
 
 
 object LmsRepo {
-    fun getLmsData(context : Context) : LmsTop5 {
-        val shared = context.getSharedPreferences("userData", Context.MODE_PRIVATE)
-        val id = shared.getString("id", "")
-        val pwd = shared.getString("pwd", "")
-
+    fun getLmsCookie(id : String?, pwd : String?) : Map<String, String>{
         if(id.isNullOrEmpty() || pwd.isNullOrEmpty()){
             Log.d("getLmsData() 오류", "id 혹은 pwd의 로컬데이터를 가져오지 못함")
         }
@@ -38,7 +34,6 @@ object LmsRepo {
             "usr_pwd" to pwd
         )
 
-
         // 로그인 페이지 접속
         val login = Jsoup.connect("https://lms.pknu.ac.kr/ilos/lo/login.acl")
             .timeout(5000)
@@ -46,9 +41,14 @@ object LmsRepo {
             .data(data)
             .method(Connection.Method.POST).execute()
 
-        
-        //만약 login 페이지에 "로그아웃" 단어가 없으면 다시 로그인을 요청해야함
+        return login.cookies()
+    }
 
+    fun getLmsData(shared: SharedPreferences) : LmsTop5 {
+        val id = shared.getString("id", "")
+        val pwd = shared.getString("pwd", "")
+
+        val cookie = getLmsCookie(id, pwd)
 
         val popData2 = hashMapOf(
             "todoKjList" to "",
@@ -59,7 +59,7 @@ object LmsRepo {
 
         val todoList = Jsoup.connect("https://lms.pknu.ac.kr/ilos/mp/todo_list.acl")
             .timeout(5000)
-            .cookies(login.cookies())
+            .cookies(cookie)
             .data(popData2)
             .method(Connection.Method.POST).execute().parse()
 
