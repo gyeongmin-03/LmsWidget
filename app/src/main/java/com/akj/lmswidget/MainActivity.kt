@@ -25,6 +25,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.akj.lmswidget.glance.LmsRepo
 import com.akj.lmswidget.ui.theme.LmsWidgetTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 
 
@@ -125,16 +129,11 @@ fun WriteUserData(editor : SharedPreferences.Editor, command : () -> Unit) {
 
             Button(
                 onClick = {
-                    if(isCorrect(id, pwd, context)){
-                        if(isSucceedLogin(id, pwd, context)) {
-                            editor.putString("id", id)
-                            editor.putString("pwd", pwd)
-                            editor.putBoolean("login", true)
-                            command()
-                            editor.commit()
-                        }
-                    } },
-                content = {Text("로그인")}
+                    if (isCorrect(id, pwd, context)) {
+                        performLogin(id, pwd, editor, command, context)
+                    }
+                },
+                content = { Text("로그인") }
             )
         }
     }
@@ -154,7 +153,27 @@ fun isCorrect(id: String, pwd : String, context : Context) : Boolean{
     return true
 }
 
-fun isSucceedLogin(id: String, pwd: String, context: Context) : Boolean{
+
+private fun performLogin(id: String, pwd: String, editor: SharedPreferences.Editor, command: () -> Unit, context: Context) {
+    CoroutineScope(Dispatchers.IO).launch {
+        val isSuccess = isSucceedLogin(id, pwd)
+        withContext(Dispatchers.Main) {
+            if (isSuccess) {
+                editor.putString("id", id)
+                editor.putString("pwd", pwd)
+                editor.putBoolean("login", true)
+                command()
+                editor.commit()
+            } else{
+                Toast.makeText(context, "로그인에 실패하였습니다.", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+}
+
+
+suspend fun isSucceedLogin(id: String, pwd: String) : Boolean{
     val cookie = LmsRepo.getLmsCookie(id, pwd)
 
     //메인 페이지 접속
@@ -164,7 +183,6 @@ fun isSucceedLogin(id: String, pwd: String, context: Context) : Boolean{
         .get()
 
     if ("로그아웃" !in mainPage.html()){
-        Toast.makeText(context, "로그인에 실패하였습니다.", Toast.LENGTH_LONG).show()
         return false
     }
 
