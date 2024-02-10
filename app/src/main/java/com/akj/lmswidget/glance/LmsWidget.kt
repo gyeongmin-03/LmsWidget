@@ -41,11 +41,10 @@ import java.text.SimpleDateFormat
 class LmsWidget : GlanceAppWidget() {
 
     companion object {  //가로, 세로
-        private val thinMode = DpSize(120.dp, 120.dp)   //2x2
-        private val smallMode = DpSize(260.dp, 160.dp)  //
-        private val mediumMode = DpSize(260.dp, 200.dp)
-        private val largeMode = DpSize(260.dp, 350.dp)  //5x4
-//        private val largeMode = DpSize(320.dp, 350.dp)  //5x4
+        private val thinMode = DpSize(100.dp, 90.dp)   //2x2
+        private val smallMode = DpSize(260.dp, 180.dp)
+        private val mediumMode = DpSize(260.dp, 270.dp)
+        private val largeMode = DpSize(260.dp, 360.dp)  //5x4
     }
 
     override val sizeMode: SizeMode = SizeMode.Responsive(
@@ -67,14 +66,13 @@ class LmsWidget : GlanceAppWidget() {
         Log.d("DDDD", "Content() 실행")
 
         val size = LocalSize.current
-        GlanceTheme {
+        GlanceTheme(colors = MyAppWidgetGlanceColorScheme.colors) {
             when (size) {
                 thinMode -> LmsThin(myData, timeFormat)
                 smallMode -> LmsSmall(myData, timeFormat)
                 mediumMode -> LmsMedium(myData, timeFormat)
                 largeMode -> LmsLarge(myData, timeFormat)
             }
-
         }
     }
 }
@@ -143,23 +141,9 @@ fun LmsThin(myData: LmsTop5, time: String){
     }
 }
 
-@Composable
-fun Test(){
-    AppWidgetColumn {
-        Text("준비 중")
-        Image(
-            provider = ImageProvider(R.drawable.refresh),
-            contentDescription = "Refresh",
-            modifier = GlanceModifier
-                .clickable(actionRunCallback<UpdateLmsData>())
-        )
-    }
-}
-
 
 @Composable
 fun LmsLarge(myData: LmsTop5, time: String){
-
     AppWidgetColumn {
         LargeTextBox(myData.first)
         LargeTextBox(myData.second)
@@ -183,6 +167,7 @@ fun LargeTextBox(data: LmsData){
         .background(ImageProvider(R.drawable.widget_border))
         .fillMaxWidth()
         .wrapContentHeight()
+//        .height(100.dp)
         .padding(8.dp)
 
     ) {
@@ -198,10 +183,10 @@ fun LargeTextBox(data: LmsData){
                 style = TextStyle(fontSize = 17.sp)
             )
         }
-        Column(modifier = GlanceModifier.width(100.dp)) {
+        Column(modifier = GlanceModifier.width(100.dp).padding(start = 8.dp)) {
             Text(
                 text = data.dDay,
-                style = TextStyle(fontSize = 23.sp)
+                style = TextStyle(fontSize = 20.sp)
             )
             Text(
                 text = if(data.date != "") {data.date +" 까지"} else "",
