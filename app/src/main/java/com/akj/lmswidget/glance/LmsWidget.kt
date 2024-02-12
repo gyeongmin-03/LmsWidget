@@ -66,7 +66,7 @@ class LmsWidget : GlanceAppWidget() {
         Log.d("DDDD", "Content() 실행")
 
         val size = LocalSize.current
-        GlanceTheme(colors = MyAppWidgetGlanceColorScheme.colors) {
+        GlanceTheme() {
             when (size) {
                 thinMode -> LmsThin(myData, timeFormat)
                 smallMode -> LmsSmall(myData, timeFormat)
