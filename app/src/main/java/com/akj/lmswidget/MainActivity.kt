@@ -52,7 +52,6 @@ class MainActivity : ComponentActivity() {
         val defaultLogin = shared.getBoolean("login", false)
 
         setContent {
-
             LmsWidgetTheme {
 
                 // A surface container using the 'background' color from the theme
@@ -83,32 +82,31 @@ fun MainAct(shared: SharedPreferences, defaultLogin : Boolean){
 @Composable
 fun ReadUserData(shared : SharedPreferences, command : () -> Unit){
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-        val id = shared.getString("id", "")
-        val pwd = shared.getString("pwd", "")
-        val editor = shared.edit()
+        Column {
+            val id = shared.getString("id", "")
+            val pwd = shared.getString("pwd", "")
+            val editor = shared.edit()
 
-        if (id.isNullOrEmpty() || pwd.isNullOrEmpty()){
-            Text("ReadUserData 오류")
-            Text("id 또는 pwd를 로컬데이터에서 가져오지 못함")
-            Text("다시 로그인 해주세요")
-        } else{
-            Column {
+            if (id.isNullOrEmpty() || pwd.isNullOrEmpty()){
+                Text("ReadUserData 오류")
+                Text("id 또는 pwd를 로컬데이터에서 가져오지 못함")
+                Text("다시 로그인 해주세요")
+            } else{
+                Text("로그인 한 학번 :")
                 Text(id)
-                Text(pwd)
             }
+
+            Button(
+                onClick = {
+                    editor.putString("id", "")
+                    editor.putString("pwd", "")
+                    editor.putBoolean("login", false)
+                    command()
+                    editor.apply()
+                },
+                content = {Text("다시 설정")}
+            )
         }
-
-        Button(
-            onClick = {
-                editor.putString("id", "")
-                editor.putString("pwd", "")
-                editor.putBoolean("login", false)
-                command()
-                editor.apply()
-            },
-            content = {Text("다시 설정")}
-        )
-
     }
 }
 
