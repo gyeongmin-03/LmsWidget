@@ -7,9 +7,10 @@ import org.jsoup.Jsoup
 
 
 object LmsRepo {
-    fun getLmsCookie(id : String?, pwd : String?) : Map<String, String>{
+    fun getLmsCookie(id : String?, pwd : String?) : Map<String, String>?{
         if(id.isNullOrEmpty() || pwd.isNullOrEmpty()){
             Log.d("getLmsData() 오류", "id 혹은 pwd의 로컬데이터를 가져오지 못함")
+            return null
         }
 
         val data = hashMapOf(
@@ -32,6 +33,12 @@ object LmsRepo {
         val pwd = shared.getString("pwd", "")
 
         val cookie = getLmsCookie(id, pwd)
+        if(cookie.isNullOrEmpty()){
+            val nullDataStr = LmsData("Error : 다시 로그인해주세요", "" ,"" ,"" )
+            val nullData = LmsData("","","","")
+
+            return LmsTop5(nullDataStr, nullData, nullData, nullData, nullData)
+        }
 
         val popData2 = hashMapOf(
             "todoKjList" to "",
