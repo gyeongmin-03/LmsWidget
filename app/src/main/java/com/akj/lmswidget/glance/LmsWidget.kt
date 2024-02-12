@@ -3,9 +3,11 @@ package com.akj.lmswidget.glance
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.glance.ColorFilter
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
@@ -20,6 +22,7 @@ import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
+import androidx.glance.color.ColorProvider
 import androidx.glance.currentState
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
@@ -66,7 +69,7 @@ class LmsWidget : GlanceAppWidget() {
         Log.d("DDDD", "Content() 실행")
 
         val size = LocalSize.current
-        GlanceTheme() {
+        GlanceTheme {
             when (size) {
                 thinMode -> LmsThin(myData, timeFormat)
                 smallMode -> LmsSmall(myData, timeFormat)
@@ -77,20 +80,32 @@ class LmsWidget : GlanceAppWidget() {
     }
 }
 
+
+@Composable
+fun LmsThin(myData: LmsTop5, time: String){
+    AppWidgetColumn {
+        Text(myData.first.title, maxLines = 1, style = TextStyle(fontSize = 13.sp, color = ColorProvider(Color.Black, Color.White)))
+        Text(myData.first.subjt, maxLines = 1 ,style = TextStyle(fontSize = 10.sp, color = ColorProvider(Color.Black, Color.White)))
+        Text(myData.first.date, maxLines = 1 ,style = TextStyle(fontSize = 10.sp, color = ColorProvider(Color.Black, Color.White)))
+        Text(
+            myData.first.dDay,
+            modifier = GlanceModifier.fillMaxWidth(),
+            style = TextStyle(
+                textAlign = TextAlign.End,
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold
+            )
+        )
+        LatestUpdate("최근 갱신 :\n${time.replace(" ", "\n")}")
+    }
+}
+
 @Composable
 fun LmsSmall(myData: LmsTop5, time: String){
     AppWidgetColumn {
         LargeTextBox(myData.first)
         LargeTextBox(myData.second)
-        Row {
-            Text("최근 갱신 : $time")
-            Image(
-                provider = ImageProvider(R.drawable.refresh),
-                contentDescription = "Refresh",
-                modifier = GlanceModifier
-                    .clickable(actionRunCallback<UpdateLmsData>())
-            )
-        }
+        LatestUpdate("최근 갱신 : $time")
     }
 }
 
@@ -101,43 +116,7 @@ fun LmsMedium(myData: LmsTop5, time: String){
         LargeTextBox(myData.first)
         LargeTextBox(myData.second)
         LargeTextBox(myData.third)
-        Row {
-            Text("최근 갱신 : $time")
-            Image(
-                provider = ImageProvider(R.drawable.refresh),
-                contentDescription = "Refresh",
-                modifier = GlanceModifier
-                    .clickable(actionRunCallback<UpdateLmsData>())
-            )
-        }
-    }
-}
-
-@Composable
-fun LmsThin(myData: LmsTop5, time: String){
-    AppWidgetColumn {
-        Text(myData.first.title, maxLines = 1, style = TextStyle(fontSize = 13.sp))
-        Text(myData.first.subjt, maxLines = 1 ,style = TextStyle(fontSize = 10.sp))
-        Text(myData.first.date, maxLines = 1 ,style = TextStyle(fontSize = 10.sp))
-        Text(
-            myData.first.dDay,
-            modifier = GlanceModifier.fillMaxWidth(),
-            style = TextStyle(
-                textAlign = TextAlign.End,
-                fontSize = 25.sp,
-                fontWeight = FontWeight.Bold
-            )
-        )
-        Row {
-            Text("최근 갱신 :\n${time.replace(" ", "\n")}", style = TextStyle(fontSize = 10.sp))
-            Image(
-                provider = ImageProvider(R.drawable.refresh),
-                contentDescription = "Refresh",
-                modifier = GlanceModifier
-                    .clickable(actionRunCallback<UpdateLmsData>())
-                    .padding(start = 5.dp)
-            )
-        }
+        LatestUpdate("최근 갱신 : $time")
     }
 }
 
@@ -150,14 +129,7 @@ fun LmsLarge(myData: LmsTop5, time: String){
         LargeTextBox(myData.third)
         LargeTextBox(myData.fourth)
         LargeTextBox(myData.fifth)
-        Row {
-            Text("최근 갱신 : $time")
-            Image(
-                provider = ImageProvider(R.drawable.refresh),
-                contentDescription = "Refresh",
-                modifier = GlanceModifier.clickable(actionRunCallback<UpdateLmsData>())
-            )
-        }
+        LatestUpdate("최근 갱신 : $time")
     }
 }
 
@@ -175,28 +147,41 @@ fun LargeTextBox(data: LmsData){
             Text(
                 text = data.subjt,
                 maxLines = 1,
-                style = TextStyle(fontSize = 15.sp)
+                style = TextStyle(fontSize = 15.sp, color = ColorProvider(Color.Black, Color.White))
             )
             Text(
                 text = data.title,
                 maxLines = 2,
-                style = TextStyle(fontSize = 17.sp)
+                style = TextStyle(fontSize = 17.sp, color = ColorProvider(Color.Black, Color.White))
             )
         }
         Column(modifier = GlanceModifier.width(100.dp).padding(start = 8.dp)) {
             Text(
                 text = data.dDay,
-                style = TextStyle(fontSize = 20.sp)
+                style = TextStyle(fontSize = 20.sp, color = ColorProvider(Color.Black, Color.White))
             )
             Text(
                 text = if(data.date != "") {data.date +" 까지"} else "",
                 maxLines = 3,
-                style = TextStyle(fontSize = 13.sp)
+                style = TextStyle(fontSize = 13.sp, color = ColorProvider(Color.Black, Color.White))
             )
         }
     }
 }
 
+@Composable
+fun LatestUpdate(text:String){
+    Row(modifier = GlanceModifier.padding(top = 8.dp)){
+        Text(text, style = TextStyle(fontSize = 10.sp, color = ColorProvider(Color.DarkGray, Color.LightGray)))
+        Image(
+            provider = ImageProvider(R.drawable.refresh),
+            contentDescription = "Refresh",
+            modifier = GlanceModifier.clickable(actionRunCallback<UpdateLmsData>()).padding(start = 5.dp),
+            colorFilter = ColorFilter.tint(ColorProvider(Color.DarkGray, Color.LightGray))
+        )
+    }
+
+}
 
 
 
@@ -220,16 +205,6 @@ object UpdateLmsData : ActionCallback {
     }
 }
 
-
-object UpdateRefresh : ActionCallback {
-    override suspend fun onAction(
-        context: Context,
-        glanceId: GlanceId,
-        parameters: ActionParameters
-    ) {
-
-    }
-}
 
 
 //새로운 onClick 함수를 만든다.
