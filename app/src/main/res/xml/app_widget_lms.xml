@@ -7,7 +7,7 @@
     android:minResizeHeight="120dp"
     android:maxResizeHeight="500dp"
     android:previewImage="@drawable/ic_launcher_foreground"
-    android:previewLayout="@layout/glance_default_loading_layout"
+    android:previewLayout="@layout/new_app_widget"
     android:resizeMode="horizontal|vertical"
     android:targetCellWidth="2"
     android:targetCellHeight="2"
