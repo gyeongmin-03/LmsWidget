@@ -193,7 +193,7 @@ object UpdateLmsData : ActionCallback {
     ) {
         try {
             val workRequest = OneTimeWorkRequestBuilder<LmsWorker>().build()
-            WorkManager.getInstance(context).enqueue(workRequest)
+            WorkManager.getInstance(context).enqueue(workRequest)   //worker 실행
 
             Thread.sleep(3*1000L)
 
