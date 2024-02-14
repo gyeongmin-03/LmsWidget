@@ -8,12 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -33,8 +28,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.akj.lmswidget.glance.LmsRepo
 import com.akj.lmswidget.ui.theme.LmsWidgetTheme
 import kotlinx.coroutines.CoroutineScope
@@ -217,46 +210,5 @@ suspend fun isSucceedLogin(id: String, pwd: String) : Boolean{
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-
-    Column {
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp)
-            .padding(8.dp)
-
-        ) {
-            Column(modifier = Modifier.width(300.dp)) {
-                Text(
-                    text = "data.subjt",
-                    maxLines = 1,
-                    fontSize = 15.sp
-                )
-                Text(
-                    text = "data.titaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaale",
-                    maxLines = 2,
-                    fontSize = 17.sp
-                )
-            }
-            Column(modifier = Modifier
-                .width(100.dp)
-                .padding(start = 8.dp)) {
-                Text(
-                    text = "data.dDay",
-                    fontSize = 20.sp
-                )
-                Text(
-                    text = "2022.01.01\n12:12 까지",
-                    maxLines = 3,
-                    fontSize = 13.sp
-                )
-            }
-        }
-
-        Row {
-            Text("최근 갱신 : time")
-        }
-    }
-
-
 
 }
