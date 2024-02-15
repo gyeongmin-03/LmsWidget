@@ -6,10 +6,15 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -23,12 +28,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.akj.lmswidget.glance.LmsRepo
+import com.akj.lmswidget.ui.theme.DarkBlue
 import com.akj.lmswidget.ui.theme.LmsWidgetTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -67,40 +77,58 @@ fun MainAct(shared: SharedPreferences, defaultLogin : Boolean){
         mutableStateOf(defaultLogin)
     }
 
-    if(login)  { ReadUserData(shared){login = false} }
-    else { WriteUserData(editor){login = true} }
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+        Column {
+            Row(modifier = Modifier.padding(bottom = 20.dp)){
+                Image(
+                    painter = painterResource(R.drawable.lms_widget_icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(100.dp).padding(10.dp),
+                    alignment = Alignment.Center
+                )
+                Text(
+                    text = "부경대학교\n과제 위젯도우미",
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+            }
+
+            if(login)  { ReadUserData(shared){login = false} }
+            else { WriteUserData(editor){login = true} }
+        }
+
+    }
 }
 
 
 @Composable
 fun ReadUserData(shared : SharedPreferences, command : () -> Unit){
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-        Column {
-            val id = shared.getString("id", "")
-            val pwd = shared.getString("pwd", "")
-            val editor = shared.edit()
+    val id = shared.getString("id", "")
+    val pwd = shared.getString("pwd", "")
+    val editor = shared.edit()
 
-            if (id.isNullOrEmpty() || pwd.isNullOrEmpty()){
-                Text("ReadUserData 오류")
-                Text("id 또는 pwd를 로컬데이터에서 가져오지 못함")
-                Text("다시 로그인 해주세요")
-            } else{
-                Text("로그인 한 학번 :")
-                Text(id)
-            }
-
-            Button(
-                onClick = {
-                    editor.putString("id", "")
-                    editor.putString("pwd", "")
-                    editor.putBoolean("login", false)
-                    command()
-                    editor.apply()
-                },
-                content = {Text("다시 설정")}
-            )
-        }
+    if (id.isNullOrEmpty() || pwd.isNullOrEmpty()){
+        Text("ReadUserData 오류")
+        Text("id 또는 pwd를 로컬데이터에서 가져오지 못함")
+        Text("다시 로그인 해주세요")
+    } else{
+        Text("로그인 한 학번 :")
+        Text(id)
     }
+
+    Button(
+        onClick = {
+            editor.putString("id", "")
+            editor.putString("pwd", "")
+            editor.putBoolean("login", false)
+            command()
+            editor.apply()
+        },
+        content = {Text("다시 설정")},
+        colors = ButtonDefaults.buttonColors(backgroundColor = DarkBlue, contentColor = Color.White),
+        modifier = Modifier.padding(top = 5.dp)
+    )
 }
 
 
@@ -108,52 +136,49 @@ fun ReadUserData(shared : SharedPreferences, command : () -> Unit){
 @Composable
 fun WriteUserData(editor : SharedPreferences.Editor, command : () -> Unit) {
     val context = LocalContext.current
-
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-        var id by remember { mutableStateOf("") }
-        var pwd by remember { mutableStateOf("")}
-        var passwordVisibility by remember { mutableStateOf(false) }
+    var id by remember { mutableStateOf("") }
+    var pwd by remember { mutableStateOf("")}
+    var passwordVisibility by remember { mutableStateOf(false) }
 
 
-        Column {
-            TextField(
-                value = id,
-                onValueChange = { id = it},
-                placeholder = {
-                        Text("학번")
-                    }
-                )
-            Box{
-                TextField(
-                    value = pwd,
-                    onValueChange = {pwd = it},
-                    placeholder = {
-                        Text("비밀번호")
-                    },
-                    visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation()
-                )
-                IconButton(
-                    onClick = { passwordVisibility = !passwordVisibility },
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                ) {
-                    Icon(
-                        painter = if(passwordVisibility) painterResource(R.drawable.visibility) else painterResource(R.drawable.visibility_off),
-                        contentDescription = ""
-                    )
-                }
-            }
-
-
-            Button(
-                onClick = {
-                    if (isCorrect(id, pwd, context)) {
-                        performLogin(id, pwd, editor, command, context)
-                    }
-                },
-                content = { Text("로그인") }
+    TextField(
+        value = id,
+        onValueChange = { id = it},
+        placeholder = {
+            Text("학번")
+        }
+    )
+    Box{
+        TextField(
+            value = pwd,
+            onValueChange = {pwd = it},
+            placeholder = {
+                Text("비밀번호")
+            },
+            visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation()
+        )
+        IconButton(
+            onClick = { passwordVisibility = !passwordVisibility },
+            modifier = Modifier.align(Alignment.CenterEnd)
+        ) {
+            Icon(
+                painter = if(passwordVisibility) painterResource(R.drawable.visibility) else painterResource(R.drawable.visibility_off),
+                contentDescription = null
             )
         }
     }
+
+
+    Button(
+        onClick = {
+            if (isCorrect(id, pwd, context)) {
+                performLogin(id, pwd, editor, command, context)
+            }
+        },
+        content = { Text("로그인") },
+        colors = ButtonDefaults.buttonColors(backgroundColor = DarkBlue, contentColor = Color.White),
+        modifier = Modifier.padding(top = 5.dp)
+    )
 }
 
 
@@ -210,5 +235,18 @@ suspend fun isSucceedLogin(id: String, pwd: String) : Boolean{
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-
+    Row(modifier = Modifier.padding(bottom = 20.dp)){
+        Image(
+            painter = painterResource(R.drawable.lms_widget_icon),
+            contentDescription = null,
+            modifier = Modifier.size(100.dp).padding(10.dp),
+            alignment = Alignment.Center
+        )
+        Text(
+            text = "부경대학교\n과제 위젯도우미",
+            fontSize = 30.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
+    }
 }
