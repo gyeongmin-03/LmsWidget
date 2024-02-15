@@ -2,6 +2,7 @@ package com.akj.lmswidget
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.SharedPreferences.Editor
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -13,6 +14,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -32,8 +35,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -78,8 +84,8 @@ fun MainAct(shared: SharedPreferences, defaultLogin : Boolean){
     }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-        Column {
-            Row(modifier = Modifier.padding(bottom = 20.dp)){
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier.padding(bottom = 20.dp)){
                 Image(
                     painter = painterResource(R.drawable.lms_widget_icon),
                     contentDescription = null,
@@ -97,7 +103,6 @@ fun MainAct(shared: SharedPreferences, defaultLogin : Boolean){
             if(login)  { ReadUserData(shared){login = false} }
             else { WriteUserData(editor){login = true} }
         }
-
     }
 }
 
@@ -108,13 +113,23 @@ fun ReadUserData(shared : SharedPreferences, command : () -> Unit){
     val pwd = shared.getString("pwd", "")
     val editor = shared.edit()
 
+    val error = """
+        ReadUserData 오류
+        id 또는 pwd를 로컬데이터에서 가져오지 못함
+        다시 로그인 해주세요
+    """.trimIndent()
+
+    val explain = """
+        로그인 되었습니다.
+        바탕화면에 위젯을 생성하고
+        새로고침을 진행해주세요.
+    """.trimIndent()
+
     if (id.isNullOrEmpty() || pwd.isNullOrEmpty()){
-        Text("ReadUserData 오류")
-        Text("id 또는 pwd를 로컬데이터에서 가져오지 못함")
-        Text("다시 로그인 해주세요")
+        Text(error)
     } else{
-        Text("로그인 한 학번 :")
-        Text(id)
+        Text(explain, textAlign = TextAlign.Center, fontSize = 15.sp, color = Color.DarkGray)
+        Text("현재 학번 :\n$id", textAlign = TextAlign.Center, fontSize = 20.sp,modifier = Modifier.padding(top = 20.dp))
     }
 
     Button(
@@ -141,12 +156,15 @@ fun WriteUserData(editor : SharedPreferences.Editor, command : () -> Unit) {
     var passwordVisibility by remember { mutableStateOf(false) }
 
 
+
     TextField(
         value = id,
         onValueChange = { id = it},
         placeholder = {
             Text("학번")
-        }
+        },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        keyboardActions = KeyboardActions(onNext = {/*TODO*/})
     )
     Box{
         TextField(
@@ -155,7 +173,9 @@ fun WriteUserData(editor : SharedPreferences.Editor, command : () -> Unit) {
             placeholder = {
                 Text("비밀번호")
             },
-            visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation()
+            visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = {dataCheck(id, pwd, editor, command, context)})
         )
         IconButton(
             onClick = { passwordVisibility = !passwordVisibility },
@@ -171,15 +191,20 @@ fun WriteUserData(editor : SharedPreferences.Editor, command : () -> Unit) {
 
     Button(
         onClick = {
-            if (isCorrect(id, pwd, context)) {
-                performLogin(id, pwd, editor, command, context)
-            }
+            dataCheck(id, pwd, editor, command, context)
         },
         content = { Text("로그인") },
         colors = ButtonDefaults.buttonColors(backgroundColor = DarkBlue, contentColor = Color.White),
         modifier = Modifier.padding(top = 5.dp)
     )
 }
+
+fun dataCheck(id: String, pwd : String, editor: Editor, command: () -> Unit, context : Context){
+    if (isCorrect(id, pwd, context)) {
+        performLogin(id, pwd, editor, command, context)
+    }
+}
+
 
 
 fun isCorrect(id: String, pwd : String, context : Context) : Boolean{
