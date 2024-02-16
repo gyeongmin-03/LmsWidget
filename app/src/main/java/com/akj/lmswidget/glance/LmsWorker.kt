@@ -1,7 +1,6 @@
 package com.akj.lmswidget.glance
 
 import android.content.Context
-import android.util.Log
 import androidx.glance.GlanceId
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
@@ -21,7 +20,6 @@ class LmsWorker(
 
         return try {
             setWidgetState(glanceIds, LmsRepo.getLmsData(shared))
-            Log.d("DDDD", "doWork() 실행")
             Result.success()
         } catch (e : Exception){
             if(runAttemptCount < 10) {

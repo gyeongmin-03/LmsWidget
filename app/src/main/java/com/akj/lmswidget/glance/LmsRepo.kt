@@ -37,7 +37,7 @@ object LmsRepo {
             val nullDataStr = LmsData("Error : 다시 로그인해주세요", "" ,"" ,"" )
             val nullData = LmsData("","","","")
 
-            return LmsTop5(nullDataStr, nullData, nullData, nullData, nullData)
+            return LmsTop5(nullDataStr, nullData, nullData, nullData, nullData, -1)
         }
 
         val popData2 = hashMapOf(
@@ -90,9 +90,8 @@ object LmsRepo {
         val date4 = todoList.select(".todo_wrap:eq(4) .todo_date .todo_date").text().replace(" ", "\n")
         val lms4 = LmsData(title4, subjt4, dDay4, date4)
 
+        val todoCount = todoList.select(".todo_wrap").size
 
-        Log.d("DDDD", "getLmsData() 실행")
-
-        return LmsTop5(lms0, lms1, lms2, lms3, lms4)
+        return LmsTop5(lms0, lms1, lms2, lms3, lms4, todoCount)
     }
 }

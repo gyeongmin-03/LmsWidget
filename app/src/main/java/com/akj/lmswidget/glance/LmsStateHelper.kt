@@ -2,7 +2,9 @@ package com.akj.lmswidget.glance
 
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import java.text.SimpleDateFormat
 
 
 object WidgetStateHelper {
@@ -32,6 +34,13 @@ object WidgetStateHelper {
         prefs[stringPreferencesKey("subjt4")] = state.fifth.subjt
         prefs[stringPreferencesKey("dDay4")] = state.fifth.dDay
         prefs[stringPreferencesKey("date4")] = state.fifth.date
+
+        prefs[intPreferencesKey("count")] = state.count
+
+
+        val currentTime = System.currentTimeMillis()
+        val timeFormat = SimpleDateFormat("yyyy.MM.dd HH:mm").format(currentTime)
+        prefs[stringPreferencesKey("time")] = timeFormat
     }
 
 
@@ -66,8 +75,13 @@ object WidgetStateHelper {
         val lms2 = LmsData(title2, subjt2, dDay2, date2)
         val lms3 = LmsData(title3, subjt3, dDay3, date3)
         val lms4 = LmsData(title4, subjt4, dDay4, date4)
+        val count = prefs[intPreferencesKey("count")] ?: -1
 
 
-        return LmsTop5(lms0, lms1, lms2, lms3, lms4)
+        return LmsTop5(lms0, lms1, lms2, lms3, lms4, count)
+    }
+
+    fun getTime(prefs : Preferences) : String {
+        return prefs[stringPreferencesKey("time")] ?: "0000.00.00 00:00"
     }
 }

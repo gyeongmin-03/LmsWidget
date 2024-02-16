@@ -13,4 +13,5 @@ data class LmsTop5(
     val third: LmsData,
     val fourth: LmsData,
     val fifth: LmsData,
+    val count: Int
 )

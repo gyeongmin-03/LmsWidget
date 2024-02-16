@@ -121,6 +121,13 @@ fun ReadUserData(shared : SharedPreferences, command : () -> Unit){
         로그인 되었습니다.
         바탕화면에 위젯을 생성하고
         새로고침을 진행해주세요.
+        
+        필요에 따라서 위젯의 크기를
+        줄이거나 늘릴 수 있습니다.
+        
+        Error가 나타날 시
+        "다시 설정" 버튼을 누른 후
+        다시 로그인 해주세요.
     """.trimIndent()
 
     if (id.isNullOrEmpty() || pwd.isNullOrEmpty()){
@@ -154,8 +161,12 @@ fun WriteUserData(editor : SharedPreferences.Editor, command : () -> Unit) {
     var pwd by remember { mutableStateOf("")}
     var passwordVisibility by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val explain = """
+        로그인 후 위젯을 
+        새로고침 해주세요.
+    """.trimIndent()
 
-
+    Text(explain, textAlign = TextAlign.Center, fontSize = 15.sp, color = Color.DarkGray, modifier = Modifier.padding(bottom = 15.dp))
     TextField(
         value = id,
         onValueChange = { id = it},
@@ -273,20 +284,5 @@ suspend fun isSucceedLogin(id: String, pwd: String) : Boolean{
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    Row(modifier = Modifier.padding(bottom = 20.dp)){
-        Image(
-            painter = painterResource(R.drawable.lms_widget_icon),
-            contentDescription = null,
-            modifier = Modifier
-                .size(100.dp)
-                .padding(10.dp),
-            alignment = Alignment.Center
-        )
-        Text(
-            text = "부경대학교\n과제 위젯도우미",
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.CenterVertically)
-        )
-    }
+
 }
