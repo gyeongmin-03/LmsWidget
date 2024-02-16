@@ -8,31 +8,34 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -62,14 +65,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             LmsWidgetTheme {
-
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    MainAct(shared, defaultLogin)
-                }
+                MainAct(shared, defaultLogin)
             }
         }
     }
@@ -89,7 +85,9 @@ fun MainAct(shared: SharedPreferences, defaultLogin : Boolean){
                 Image(
                     painter = painterResource(R.drawable.lms_widget_icon),
                     contentDescription = null,
-                    modifier = Modifier.size(100.dp).padding(10.dp),
+                    modifier = Modifier
+                        .size(100.dp)
+                        .padding(10.dp),
                     alignment = Alignment.Center
                 )
                 Text(
@@ -148,13 +146,14 @@ fun ReadUserData(shared : SharedPreferences, command : () -> Unit){
 
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun WriteUserData(editor : SharedPreferences.Editor, command : () -> Unit) {
     val context = LocalContext.current
     var id by remember { mutableStateOf("") }
     var pwd by remember { mutableStateOf("")}
     var passwordVisibility by remember { mutableStateOf(false) }
-
+    val keyboardController = LocalSoftwareKeyboardController.current
 
 
     TextField(
@@ -163,20 +162,35 @@ fun WriteUserData(editor : SharedPreferences.Editor, command : () -> Unit) {
         placeholder = {
             Text("학번")
         },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(onNext = {/*TODO*/})
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onNext = { keyboardController?.hide() }),
+        colors = TextFieldDefaults.textFieldColors(
+            focusedIndicatorColor = Color.Gray,
+            cursorColor = DarkBlue,
+            backgroundColor = Color.White
+        ),
+        shape = RoundedCornerShape(0.dp),
+        modifier = Modifier.border(width = 2.dp, color = DarkBlue)
     )
     Box{
         TextField(
             value = pwd,
             onValueChange = {pwd = it},
+            modifier = Modifier.padding(top = 8.dp, bottom = 10.dp).border(width = 2.dp, color = DarkBlue),
             placeholder = {
                 Text("비밀번호")
             },
             visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = {dataCheck(id, pwd, editor, command, context)})
+            keyboardActions = KeyboardActions(onDone = {dataCheck(id, pwd, editor, command, context)}),
+            colors = TextFieldDefaults.textFieldColors(
+                focusedIndicatorColor = Color.Gray,
+                cursorColor = DarkBlue,
+                backgroundColor = Color.White
+            ),
+            shape = RoundedCornerShape(0.dp)
         )
+
         IconButton(
             onClick = { passwordVisibility = !passwordVisibility },
             modifier = Modifier.align(Alignment.CenterEnd)
@@ -194,8 +208,7 @@ fun WriteUserData(editor : SharedPreferences.Editor, command : () -> Unit) {
             dataCheck(id, pwd, editor, command, context)
         },
         content = { Text("로그인") },
-        colors = ButtonDefaults.buttonColors(backgroundColor = DarkBlue, contentColor = Color.White),
-        modifier = Modifier.padding(top = 5.dp)
+        colors = ButtonDefaults.buttonColors(backgroundColor = DarkBlue, contentColor = Color.White)
     )
 }
 
@@ -264,7 +277,9 @@ fun GreetingPreview() {
         Image(
             painter = painterResource(R.drawable.lms_widget_icon),
             contentDescription = null,
-            modifier = Modifier.size(100.dp).padding(10.dp),
+            modifier = Modifier
+                .size(100.dp)
+                .padding(10.dp),
             alignment = Alignment.Center
         )
         Text(
