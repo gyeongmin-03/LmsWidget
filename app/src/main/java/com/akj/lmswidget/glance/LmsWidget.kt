@@ -68,41 +68,7 @@ class LmsWidget : GlanceAppWidget() {
 
     @Composable
     private fun Content() {
-//        val myData = WidgetStateHelper.getState(currentState())
-        val myData = LmsTop5(
-            LmsData(
-                "[온라인강의]C 개발을 위한 환경설정",
-                "2023 온라인 코딩 특강(C언어)",
-                "D-Day",
-                "2024.01.31 23:59"
-            ),
-            LmsData(
-                "[온라인강의]C 개발을 위한 환경설정",
-                "2023 온라인 코딩 특강(C언어)",
-                "D-Day",
-                "2024.01.31 23:59"
-            ),
-            LmsData(
-                "[온라인강의]C 개발을 위한 환경설정",
-                "2023 온라인 코딩 특강(C언어)",
-                "D-Day",
-                "2024.01.31 23:59"
-            ),
-            LmsData(
-                "[온라인강의]C 개발을 위한 환경설정",
-                "2023 온라인 코딩 특강(C언어)",
-                "D-Day",
-                "2024.01.31 23:59"
-            ),
-            LmsData(
-                "[온라인강의]C 개발을 위한 환경설정",
-                "2023 온라인 코딩 특강(C언어)",
-                "D-Day",
-                "2024.01.31 23:59"
-            ),
-            -1
-        )
-
+        val myData = WidgetStateHelper.getState(currentState())
         val timeFormat = WidgetStateHelper.getTime(currentState())
 
         val size = LocalSize.current
@@ -335,8 +301,3 @@ object UpdateLmsData : ActionCallback {
         }
     }
 }
-
-
-
-//새로운 onClick 함수를 만든다.
-//Refresh 아이콘이 돌아가도록
