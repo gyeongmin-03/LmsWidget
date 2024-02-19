@@ -10,29 +10,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="13sp"
-        android:text="과제명"
-        />
-    <TextView
-        android:id="@+id/subjt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="10sp"
-        android:text="강의명"
-        />
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="10sp"
-        android:text="제출 날짜"
+        android:text="총 과제 수"
+        android:layout_gravity="center"
         />
     <TextView
         android:id="@+id/dDay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
+        android:layout_gravity="center"
         android:textSize="25sp"
-        android:text="D-Day"
+        android:text="0"
         />
     <TextView
         android:id="@+id/UpdateDate"
@@ -40,7 +27,8 @@
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
         android:textSize="10sp"
-        android:text="최근 갱신 : 2024.01.01 12:00"
+        android:text="01.01 12:00"
+        android:layout_gravity="center"
         />
 
 </LinearLayout>
