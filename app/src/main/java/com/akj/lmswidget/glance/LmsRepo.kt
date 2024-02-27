@@ -53,9 +53,10 @@ object LmsRepo {
             .data(popData2)
             .method(Connection.Method.POST).execute().parse()
 
+        val NoTodo = "LMS에 과제가 없습니다"
 
         var title0 = todoList.select(".todo_wrap:eq(0) .todo_title").text()
-        if(title0 == "") title0 = "LMS에 과제가 없습니다"
+        if(title0 == "") title0 = NoTodo
         val subjt0 = todoList.select(".todo_wrap:eq(0) .todo_subjt").text()
         val dDay0 = todoList.select(".todo_wrap:eq(0) .todo_date .todo_d_day").text()
         val date0 = todoList.select(".todo_wrap:eq(0) .todo_date .todo_date").text().replace(" ", "\n")
@@ -91,7 +92,7 @@ object LmsRepo {
         val lms4 = LmsData(title4, subjt4, dDay4, date4)
 
         val todoCount =
-            if(todoList.select(".todo_wrap").size == 1 && title1 == "LMS에 과제가 없습니다") {
+            if(title0.equals(NoTodo)) {
                 0
             }else{
                 todoList.select(".todo_wrap").size
