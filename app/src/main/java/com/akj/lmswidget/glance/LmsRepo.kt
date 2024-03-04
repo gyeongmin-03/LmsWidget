@@ -91,12 +91,7 @@ object LmsRepo {
         val date4 = todoList.select(".todo_wrap:eq(4) .todo_date .todo_date").text().replace(" ", "\n")
         val lms4 = LmsData(title4, subjt4, dDay4, date4)
 
-        val todoCount =
-            if(title0.equals(NoTodo)) {
-                0
-            }else{
-                todoList.select(".todo_wrap").size
-            }
+        val todoCount =  todoList.select(".todo_wrap").size - 1
 
         return LmsTop5(lms0, lms1, lms2, lms3, lms4, todoCount)
     }
