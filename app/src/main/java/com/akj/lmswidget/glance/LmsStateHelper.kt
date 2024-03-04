@@ -39,7 +39,7 @@ object WidgetStateHelper {
 
 
         val currentTime = System.currentTimeMillis()
-        val timeFormat = SimpleDateFormat("yyyy.MM.dd HH:mm").format(currentTime)
+        val timeFormat = SimpleDateFormat("MM.dd HH:mm").format(currentTime)
         prefs[stringPreferencesKey("time")] = timeFormat
     }
 
@@ -82,6 +82,6 @@ object WidgetStateHelper {
     }
 
     fun getTime(prefs : Preferences) : String {
-        return prefs[stringPreferencesKey("time")] ?: "0000.00.00 00:00"
+        return prefs[stringPreferencesKey("time")] ?: "00.00 00:00"
     }
 }

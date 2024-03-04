@@ -39,6 +39,9 @@ import androidx.glance.text.TextStyle
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.akj.lmswidget.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import java.text.SimpleDateFormat
 
 
 class LmsWidget : GlanceAppWidget() {
@@ -112,7 +115,7 @@ fun LmsThin(myData: LmsTop5, time: String){
                 fontWeight = FontWeight.Bold,
             )
         )
-        LatestUpdate(time.substring(5), GlanceModifier.fillMaxWidth(), 9.sp, Alignment.Horizontal.CenterHorizontally, myData = myData, false)
+        LatestUpdate(time, GlanceModifier.fillMaxWidth(), 9.sp, Alignment.Horizontal.CenterHorizontally, myData = myData, false)
     }
 }
 
@@ -123,7 +126,7 @@ fun LmsSmallWide(myData: LmsTop5, time: String){
     AppWidgetColumn {
         WideTextBox(myData.first)
         WideTextBox(myData.second)
-        LatestUpdate("최근 갱신 : $time", myData = myData)
+        LatestUpdate("$time 갱신", myData = myData)
     }
 }
 
@@ -132,7 +135,7 @@ fun LmsSmallNarrow(myData: LmsTop5, time: String){
     AppWidgetColumn {
         NarrowTextBox(myData.first)
         NarrowTextBox(myData.second)
-        LatestUpdate("${time.substring(5)} 갱신", myData = myData)
+        LatestUpdate("$time 갱신", myData = myData)
     }
 }
 
@@ -143,7 +146,7 @@ fun LmsMediumWide(myData: LmsTop5, time: String){
         WideTextBox(myData.first)
         WideTextBox(myData.second)
         WideTextBox(myData.third)
-        LatestUpdate("최근 갱신 : $time", myData = myData)
+        LatestUpdate("$time 갱신", myData = myData)
     }
 }
 
@@ -153,7 +156,7 @@ fun LmsMediumNarrow(myData: LmsTop5, time: String) {
         NarrowTextBox(myData.first)
         NarrowTextBox(myData.second)
         NarrowTextBox(myData.third)
-        LatestUpdate("${time.substring(5)} 갱신", myData = myData)
+        LatestUpdate("$time 갱신", myData = myData)
     }
 }
 
@@ -166,7 +169,7 @@ fun LmsLargeNarrow(myData: LmsTop5, time: String){
         NarrowTextBox(myData.third)
         NarrowTextBox(myData.fourth)
         NarrowTextBox(myData.fifth)
-        LatestUpdate("${time.substring(5)} 갱신", myData = myData)
+        LatestUpdate("$time 갱신", myData = myData)
     }
 }
 
@@ -179,7 +182,7 @@ fun LmsLargeWide(myData: LmsTop5, time: String){
         WideTextBox(myData.third)
         WideTextBox(myData.fourth)
         WideTextBox(myData.fifth)
-        LatestUpdate("최근 갱신 : $time", myData = myData)
+        LatestUpdate("$time 갱신", myData = myData)
     }
 }
 
@@ -190,7 +193,6 @@ fun NarrowTextBox(data: LmsData){
     Row(modifier = GlanceModifier
         .background(ImageProvider(R.drawable.widget_border))
         .fillMaxWidth()
-//        .wrapContentWidth()
         .height(75.dp)
         .padding(8.dp)
     ) {
@@ -224,7 +226,6 @@ fun WideTextBox(data: LmsData){
     Row(modifier = GlanceModifier
         .background(ImageProvider(R.drawable.widget_border))
         .fillMaxWidth()
-//        .wrapContentWidth()
         .height(75.dp)
         .padding(8.dp)
     ) {
@@ -263,18 +264,25 @@ fun LatestUpdate(
     myData: LmsTop5,
     visible : Boolean = true
 ){
+    val onClick = if(time.split(":")[1].split(" ")[0] != SimpleDateFormat("mm").format(System.currentTimeMillis())){
+        actionRunCallback<UpdateLmsData>()
+    } else {
+        actionRunCallback<EmptyAction>()
+    }
+
     Row(modifier = modifier, horizontalAlignment = alignment){
         Text(time, style = TextStyle(fontSize = fontSize, color = ColorProvider(Color.DarkGray, Color.LightGray)))
         if(visible){
             Text(" / 총 과제 : ${myData.count} 개",
-                style = TextStyle(fontSize = fontSize, color = ColorProvider(Color.DarkGray, Color.LightGray)),
-//                modifier = GlanceModifier.padding(start = 5.dp)
+                style = TextStyle(fontSize = fontSize, color = ColorProvider(Color.DarkGray, Color.LightGray))
             )
         }
         Image(
             provider = ImageProvider(R.drawable.refresh),
             contentDescription = "Refresh",
-            modifier = GlanceModifier.clickable(actionRunCallback<UpdateLmsData>()).padding(start = 3.dp),
+            modifier = GlanceModifier
+                .clickable(onClick)
+                .padding(start = 3.dp),
             colorFilter = ColorFilter.tint(ColorProvider(Color.DarkGray, Color.LightGray))
         )
     }
@@ -292,12 +300,28 @@ object UpdateLmsData : ActionCallback {
             val workRequest = OneTimeWorkRequestBuilder<LmsWorker>().build()
             WorkManager.getInstance(context).enqueue(workRequest)   //worker 실행
 
-            Thread.sleep(3*1000L)
+            runBlocking {
+                delay(1000)
+            }
 
             LmsWidget().update(context, glanceId)   //내용이 바뀌었을 때만 실행됨
-
         } catch (e: Exception){
             Log.e("ActionCallback에러", "에러 내용: ${e.message}")
         }
+    }
+    //이거를 연타시 액션콜 함수가 동기적으로 연결되는 것 같음
+    //연타하니까, 테스트 -> 테스트2 -> 테스트가 반복됨.
+    //하나의 함수에 위젯 업데이트가 2개 있어도 똑같음
+    //하나의 함수에 위젯 업데이트가 2개있어도, 결국 테스트->테스트2가 출력
+}
+
+
+object EmptyAction : ActionCallback {
+    override suspend fun onAction(
+        context: Context,
+        glanceId: GlanceId,
+        parameters: ActionParameters
+    ) {
+        LmsWidget().update(context, glanceId)
     }
 }
