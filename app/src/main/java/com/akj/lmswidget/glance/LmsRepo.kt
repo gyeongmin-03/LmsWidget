@@ -59,7 +59,7 @@ object LmsRepo {
         if(title0 == "") title0 = NoTodo
         val subjt0 = todoList.select(".todo_wrap:eq(0) .todo_subjt").text()
         val dDay0 = todoList.select(".todo_wrap:eq(0) .todo_date .todo_d_day").text()
-        val date0 = todoList.select(".todo_wrap:eq(0) .todo_date .todo_date").text().replace(" ", "\n")
+        val date0 = todoList.select(".todo_wrap:eq(0) .todo_date .todo_date").text()
         val lms0 = LmsData(title0, subjt0, dDay0, date0)
 
 
@@ -67,28 +67,28 @@ object LmsRepo {
         val title1 = todoList.select(".todo_wrap:eq(1) .todo_title").text()
         val subjt1 = todoList.select(".todo_wrap:eq(1) .todo_subjt").text()
         val dDay1 = todoList.select(".todo_wrap:eq(1) .todo_date .todo_d_day").text()
-        val date1 = todoList.select(".todo_wrap:eq(1) .todo_date .todo_date").text().replace(" ", "\n")
+        val date1 = todoList.select(".todo_wrap:eq(1) .todo_date .todo_date").text()
         val lms1 = LmsData(title1, subjt1, dDay1, date1)
 
 
         val title2 = todoList.select(".todo_wrap:eq(2) .todo_title").text()
         val subjt2 = todoList.select(".todo_wrap:eq(2) .todo_subjt").text()
         val dDay2 = todoList.select(".todo_wrap:eq(2) .todo_date .todo_d_day").text()
-        val date2 = todoList.select(".todo_wrap:eq(2) .todo_date .todo_date").text().replace(" ", "\n")
+        val date2 = todoList.select(".todo_wrap:eq(2) .todo_date .todo_date").text()
         val lms2 = LmsData(title2, subjt2, dDay2, date2)
 
 
         val title3 = todoList.select(".todo_wrap:eq(3) .todo_title").text()
         val subjt3 = todoList.select(".todo_wrap:eq(3) .todo_subjt").text()
         val dDay3 = todoList.select(".todo_wrap:eq(3) .todo_date .todo_d_day").text()
-        val date3 = todoList.select(".todo_wrap:eq(3) .todo_date .todo_date").text().replace(" ", "\n")
+        val date3 = todoList.select(".todo_wrap:eq(3) .todo_date .todo_date").text()
         val lms3 = LmsData(title3, subjt3, dDay3, date3)
 
 
         val title4 = todoList.select(".todo_wrap:eq(4) .todo_title").text()
         val subjt4 = todoList.select(".todo_wrap:eq(4) .todo_subjt").text()
         val dDay4 = todoList.select(".todo_wrap:eq(4) .todo_date .todo_d_day").text()
-        val date4 = todoList.select(".todo_wrap:eq(4) .todo_date .todo_date").text().replace(" ", "\n")
+        val date4 = todoList.select(".todo_wrap:eq(4) .todo_date .todo_date").text()
         val lms4 = LmsData(title4, subjt4, dDay4, date4)
 
         val todoCount =  todoList.select(".todo_wrap").size - 1

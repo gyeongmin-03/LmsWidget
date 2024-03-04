@@ -45,7 +45,7 @@ object WidgetStateHelper {
 
 
     fun getState(prefs : Preferences) : LmsTop5 {
-        val title0 = prefs[stringPreferencesKey("title0")] ?: "Error : 다시 로그인해주세요"
+        val title0 = prefs[stringPreferencesKey("title0")] ?: "Error : 다시 시도해주세요"
         val subjt0 = prefs[stringPreferencesKey("subjt0")] ?: ""
         val dDay0 = prefs[stringPreferencesKey("dDay0")] ?: ""
         val date0 = prefs[stringPreferencesKey("date0")] ?: ""

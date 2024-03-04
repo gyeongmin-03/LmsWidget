@@ -3,6 +3,7 @@ package com.akj.lmswidget.glance
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
@@ -209,12 +210,11 @@ fun NarrowTextBox(data: LmsData){
                 )
                 Text(
                     text = if(data.date != "") {data.date.substring(5) +" 까지"} else "",
-                    maxLines = 3,
+                    maxLines = 1,
                     style = TextStyle(fontSize = 11.sp, color = ColorProvider(Color.Black, Color.White)),
-                    modifier = GlanceModifier.padding(start = 10.dp)
+                    modifier = GlanceModifier.padding(start = 10.dp).fillMaxWidth()
                 )
             }
-
         }
     }
 }
@@ -248,7 +248,7 @@ fun WideTextBox(data: LmsData){
             )
             Text(
                 text = if(data.date != "") {data.date.replace(" ", "\n") +" 까지"} else "",
-                maxLines = 3,
+                maxLines = 2,
                 style = TextStyle(fontSize = 10.sp, color = ColorProvider(Color.Black, Color.White))
             )
         }
@@ -264,11 +264,16 @@ fun LatestUpdate(
     myData: LmsTop5,
     visible : Boolean = true
 ){
-    val onClick = if(time.split(":")[1].split(" ")[0] != SimpleDateFormat("mm").format(System.currentTimeMillis())){
-        actionRunCallback<UpdateLmsData>()
-    } else {
-        actionRunCallback<EmptyAction>()
-    }
+    val currentTimeState = SimpleDateFormat("mm").format(System.currentTimeMillis())
+    val timeState = time.split(":")[1].split(" ")[0]
+    
+    val onClick =
+        if(timeState != currentTimeState ){
+            actionRunCallback<UpdateLmsData>()
+        }else {
+            actionRunCallback<EmptyAction>()
+        }
+
 
     Row(modifier = modifier, horizontalAlignment = alignment){
         Text(time, style = TextStyle(fontSize = fontSize, color = ColorProvider(Color.DarkGray, Color.LightGray)))
@@ -297,22 +302,22 @@ object UpdateLmsData : ActionCallback {
         parameters: ActionParameters
     ) {
         try {
-            val workRequest = OneTimeWorkRequestBuilder<LmsWorker>().build()
-            WorkManager.getInstance(context).enqueue(workRequest)   //worker 실행
+            LoadingState.setLoadingState(!LoadingState.getLoadingState())
 
-            runBlocking {
-                delay(1000)
+            if(LoadingState.getLoadingState()){
+                val workRequest = OneTimeWorkRequestBuilder<LmsWorker>().build()
+                WorkManager.getInstance(context).enqueue(workRequest)   //worker 실행
+
+                runBlocking {
+                    delay(3000)
+                }
+
+                LmsWidget().update(context, glanceId)   //내용이 바뀌었을 때만 실행됨
             }
-
-            LmsWidget().update(context, glanceId)   //내용이 바뀌었을 때만 실행됨
         } catch (e: Exception){
             Log.e("ActionCallback에러", "에러 내용: ${e.message}")
         }
     }
-    //이거를 연타시 액션콜 함수가 동기적으로 연결되는 것 같음
-    //연타하니까, 테스트 -> 테스트2 -> 테스트가 반복됨.
-    //하나의 함수에 위젯 업데이트가 2개 있어도 똑같음
-    //하나의 함수에 위젯 업데이트가 2개있어도, 결국 테스트->테스트2가 출력
 }
 
 
@@ -323,5 +328,17 @@ object EmptyAction : ActionCallback {
         parameters: ActionParameters
     ) {
         LmsWidget().update(context, glanceId)
+    }
+}
+
+object LoadingState {
+    private val loading = mutableStateOf(false)
+
+    fun setLoadingState(new : Boolean){
+        loading.value = new
+    }
+
+    fun getLoadingState() : Boolean{
+        return loading.value
     }
 }
