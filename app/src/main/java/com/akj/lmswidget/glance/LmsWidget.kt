@@ -3,7 +3,6 @@ package com.akj.lmswidget.glance
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
@@ -268,11 +267,7 @@ fun LatestUpdate(
     val timeState = time.split(":")[1].split(" ")[0]
     
     val onClick =
-        if(timeState != currentTimeState ){
-            actionRunCallback<UpdateLmsData>()
-        }else {
-            actionRunCallback<EmptyAction>()
-        }
+        actionRunCallback<UpdateLmsData>()
 
 
     Row(modifier = modifier, horizontalAlignment = alignment){
@@ -302,11 +297,17 @@ object UpdateLmsData : ActionCallback {
         parameters: ActionParameters
     ) {
         try {
-            LoadingState.setLoadingState(!LoadingState.getLoadingState())
+            val sharedPreferences = context.getSharedPreferences("userData", Context.MODE_PRIVATE)
+            val time = sharedPreferences.getString("time", "00")
+            val currentTime = SimpleDateFormat("mm").format(System.currentTimeMillis())
 
-            if(LoadingState.getLoadingState()){
+            if(time!! != currentTime){
                 val workRequest = OneTimeWorkRequestBuilder<LmsWorker>().build()
                 WorkManager.getInstance(context).enqueue(workRequest)   //worker 실행
+
+                val editor = sharedPreferences.edit()
+                editor.putString("time", SimpleDateFormat("mm").format(System.currentTimeMillis()))
+                editor.commit()
 
                 runBlocking {
                     delay(3000)
@@ -317,28 +318,5 @@ object UpdateLmsData : ActionCallback {
         } catch (e: Exception){
             Log.e("ActionCallback에러", "에러 내용: ${e.message}")
         }
-    }
-}
-
-
-object EmptyAction : ActionCallback {
-    override suspend fun onAction(
-        context: Context,
-        glanceId: GlanceId,
-        parameters: ActionParameters
-    ) {
-        LmsWidget().update(context, glanceId)
-    }
-}
-
-object LoadingState {
-    private val loading = mutableStateOf(false)
-
-    fun setLoadingState(new : Boolean){
-        loading.value = new
-    }
-
-    fun getLoadingState() : Boolean{
-        return loading.value
     }
 }

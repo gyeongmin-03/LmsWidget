@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -44,7 +43,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.akj.lmswidget.glance.LmsRepo
@@ -279,30 +277,4 @@ suspend fun isSucceedLogin(id: String, pwd: String) : Boolean{
     }
 
     return true
-}
-
-@Preview
-@Composable
-fun test(){
-    Column(modifier = Modifier.width(200.dp)) {
-        Text(
-            text = "data.title",
-            maxLines = 1,
-            style = androidx.compose.ui.text.TextStyle(fontSize = 12.sp)
-        )
-        Row {
-            Text(
-                text = "data.dDay",
-                style = androidx.compose.ui.text.TextStyle(fontSize = 17.sp)
-            )
-            Text(
-                text = "12.12 12:12 까지",
-                maxLines = 3,
-                style = androidx.compose.ui.text.TextStyle(
-                    fontSize = 11.sp,
-                ),
-                modifier = Modifier.padding(start = 10.dp),
-            )
-        }
-    }
 }
