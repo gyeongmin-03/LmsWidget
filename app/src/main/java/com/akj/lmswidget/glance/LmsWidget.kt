@@ -299,15 +299,15 @@ object UpdateLmsData : ActionCallback {
         try {
             val sharedPreferences = context.getSharedPreferences("userData", Context.MODE_PRIVATE)
             val time = sharedPreferences.getString("time", "00")
-            val currentTime = SimpleDateFormat("mm").format(System.currentTimeMillis())
+            val currentTime = SimpleDateFormat("MM.dd HH:mm").format(System.currentTimeMillis())
 
             if(time!! != currentTime){
                 val workRequest = OneTimeWorkRequestBuilder<LmsWorker>().build()
                 WorkManager.getInstance(context).enqueue(workRequest)   //worker 실행
 
                 val editor = sharedPreferences.edit()
-                editor.putString("time", SimpleDateFormat("mm").format(System.currentTimeMillis()))
-                editor.commit()
+                editor.putString("time", SimpleDateFormat("MM.dd HH:mm").format(System.currentTimeMillis()))
+                editor.apply()
 
                 runBlocking {
                     delay(3000)
