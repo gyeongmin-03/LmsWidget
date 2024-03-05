@@ -34,7 +34,7 @@ object LmsRepo {
 
         val cookie = getLmsCookie(id, pwd)
         if(cookie.isNullOrEmpty()){
-            val nullDataStr = LmsData("Error : 다시 로그인해주세요", "" ,"" ,"" )
+            val nullDataStr = LmsData("Error : 다시 시도해주세요", "" ,"" ,"" )
             val nullData = LmsData("","","","")
 
             return LmsTop5(nullDataStr, nullData, nullData, nullData, nullData, -1)

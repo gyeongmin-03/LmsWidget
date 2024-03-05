@@ -124,9 +124,9 @@ fun ReadUserData(shared : SharedPreferences, command : () -> Unit){
         필요에 따라서 위젯의 크기를
         줄이거나 늘릴 수 있습니다.
         
-        Error가 나타날 시
-        "다시 설정" 버튼을 누른 후
-        다시 로그인 해주세요.
+        LMS 서버의 과부화방지를 위해
+        갱신 후 약 1분동안 재갱신이
+        불가능합니다.
     """.trimIndent()
 
     if (id.isNullOrEmpty() || pwd.isNullOrEmpty()){
