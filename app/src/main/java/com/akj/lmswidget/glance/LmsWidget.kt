@@ -8,15 +8,12 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.glance.ColorFilter
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
-import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
 import androidx.glance.action.ActionParameters
-import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.action.ActionCallback
@@ -42,7 +39,6 @@ import com.akj.lmswidget.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
-
 
 class LmsWidget : GlanceAppWidget() {
 
@@ -263,13 +259,6 @@ fun LatestUpdate(
     myData: LmsTop5,
     visible : Boolean = true
 ){
-    val currentTimeState = SimpleDateFormat("mm").format(System.currentTimeMillis())
-    val timeState = time.split(":")[1].split(" ")[0]
-    
-    val onClick =
-        actionRunCallback<UpdateLmsData>()
-
-
     Row(modifier = modifier, horizontalAlignment = alignment){
         Text(time, style = TextStyle(fontSize = fontSize, color = ColorProvider(Color.DarkGray, Color.LightGray)))
         if(visible){
@@ -277,14 +266,6 @@ fun LatestUpdate(
                 style = TextStyle(fontSize = fontSize, color = ColorProvider(Color.DarkGray, Color.LightGray))
             )
         }
-        Image(
-            provider = ImageProvider(R.drawable.refresh),
-            contentDescription = "Refresh",
-            modifier = GlanceModifier
-                .clickable(onClick)
-                .padding(start = 3.dp),
-            colorFilter = ColorFilter.tint(ColorProvider(Color.DarkGray, Color.LightGray))
-        )
     }
 }
 
@@ -312,9 +293,8 @@ object UpdateLmsData : ActionCallback {
                 runBlocking {
                     delay(3000)
                 }
-
-                LmsWidget().update(context, glanceId)   //내용이 바뀌었을 때만 실행됨
             }
+            LmsWidget().update(context, glanceId)   //내용이 바뀌었을 때만 실행됨
         } catch (e: Exception){
             Log.e("ActionCallback에러", "에러 내용: ${e.message}")
         }
