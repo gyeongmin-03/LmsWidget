@@ -124,7 +124,7 @@ fun ReadUserData(shared : SharedPreferences, command : () -> Unit){
         필요에 따라서 위젯의 크기를
         줄이거나 늘릴 수 있습니다.
         
-        LMS 서버의 과부화방지를 위해
+        LMS 서버의 과부하 방지를 위해
         갱신 후 약 1분동안 재갱신이
         불가능합니다.
     """.trimIndent()
