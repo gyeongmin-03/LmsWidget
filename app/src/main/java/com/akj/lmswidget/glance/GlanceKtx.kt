@@ -8,8 +8,6 @@ import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.LocalContext
-import androidx.glance.action.clickable
-import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.appWidgetBackground
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.background
@@ -43,7 +41,7 @@ fun AppWidgetBox(
  */
 @Composable
 fun AppWidgetColumn(
-    modifier: GlanceModifier = GlanceModifier.clickable(actionRunCallback<UpdateLmsData>()),
+    modifier: GlanceModifier = GlanceModifier,
     verticalAlignment: Alignment.Vertical = Alignment.Top,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     content: @Composable ColumnScope.() -> Unit
