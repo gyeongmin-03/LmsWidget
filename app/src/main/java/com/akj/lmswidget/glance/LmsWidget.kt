@@ -303,8 +303,10 @@ object UpdateLmsData : ActionCallback {
                 runBlocking {
                     delay(3000)
                 }
+                LmsWidget().update(context, glanceId)
+            } else {
+                LmsWidget().update(context, glanceId)
             }
-            LmsWidget().update(context, glanceId)   //내용이 바뀌었을 때만 실행됨
         } catch (e: Exception){
             Log.e("ActionCallback에러", "에러 내용: ${e.message}")
         }
