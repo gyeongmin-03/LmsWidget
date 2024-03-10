@@ -8,12 +8,15 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.glance.ColorFilter
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
+import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
 import androidx.glance.action.ActionParameters
+import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.action.ActionCallback
@@ -28,6 +31,7 @@ import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
+import androidx.glance.layout.size
 import androidx.glance.layout.width
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
@@ -266,6 +270,12 @@ fun LatestUpdate(
                 style = TextStyle(fontSize = fontSize, color = ColorProvider(Color.DarkGray, Color.LightGray))
             )
         }
+        Image(
+            provider = ImageProvider(R.drawable.refresh),
+            contentDescription = "Refresh",
+            modifier = GlanceModifier.padding(start = 3.dp).size(size = 20.dp).clickable(actionRunCallback<UpdateLmsData>()),
+            colorFilter = ColorFilter.tint(ColorProvider(Color.DarkGray, Color.LightGray))
+        )
     }
 }
 
