@@ -115,7 +115,7 @@ fun LmsThin(myData: LmsTop5, time: String){
                 fontWeight = FontWeight.Bold,
             )
         )
-        LatestUpdate(time, GlanceModifier.fillMaxWidth(), 9.sp, Alignment.Horizontal.CenterHorizontally, myData = myData, false)
+        LatestRefreshRow(time, GlanceModifier.fillMaxWidth(), 9.sp, Alignment.Horizontal.CenterHorizontally, myData = myData, false)
     }
 }
 
@@ -126,7 +126,7 @@ fun LmsSmallWide(myData: LmsTop5, time: String){
     AppWidgetColumn {
         WideTextBox(myData.first)
         WideTextBox(myData.second)
-        LatestUpdate("$time 갱신", myData = myData)
+        LatestRefreshRow("$time 갱신", myData = myData)
     }
 }
 
@@ -135,7 +135,7 @@ fun LmsSmallNarrow(myData: LmsTop5, time: String){
     AppWidgetColumn {
         NarrowTextBox(myData.first)
         NarrowTextBox(myData.second)
-        LatestUpdate("$time 갱신", myData = myData)
+        LatestRefreshRow("$time 갱신", myData = myData)
     }
 }
 
@@ -146,7 +146,7 @@ fun LmsMediumWide(myData: LmsTop5, time: String){
         WideTextBox(myData.first)
         WideTextBox(myData.second)
         WideTextBox(myData.third)
-        LatestUpdate("$time 갱신", myData = myData)
+        LatestRefreshRow("$time 갱신", myData = myData)
     }
 }
 
@@ -156,7 +156,7 @@ fun LmsMediumNarrow(myData: LmsTop5, time: String) {
         NarrowTextBox(myData.first)
         NarrowTextBox(myData.second)
         NarrowTextBox(myData.third)
-        LatestUpdate("$time 갱신", myData = myData)
+        LatestRefreshRow("$time 갱신", myData = myData)
     }
 }
 
@@ -169,7 +169,7 @@ fun LmsLargeNarrow(myData: LmsTop5, time: String){
         NarrowTextBox(myData.third)
         NarrowTextBox(myData.fourth)
         NarrowTextBox(myData.fifth)
-        LatestUpdate("$time 갱신", myData = myData)
+        LatestRefreshRow("$time 갱신", myData = myData)
     }
 }
 
@@ -182,7 +182,7 @@ fun LmsLargeWide(myData: LmsTop5, time: String){
         WideTextBox(myData.third)
         WideTextBox(myData.fourth)
         WideTextBox(myData.fifth)
-        LatestUpdate("$time 갱신", myData = myData)
+        LatestRefreshRow("$time 갱신", myData = myData)
     }
 }
 
@@ -255,7 +255,7 @@ fun WideTextBox(data: LmsData){
 }
 
 @Composable
-fun LatestUpdate(
+fun LatestRefreshRow(
     time:String,
     modifier: GlanceModifier = GlanceModifier.padding(top = 8.dp),
     fontSize: TextUnit = 10.sp,
@@ -263,6 +263,8 @@ fun LatestUpdate(
     myData: LmsTop5,
     visible : Boolean = true
 ){
+    val isError = myData.first.title == errorStr
+
     Row(modifier = modifier, horizontalAlignment = alignment){
         Text(time, style = TextStyle(fontSize = fontSize, color = ColorProvider(Color.DarkGray, Color.LightGray)))
         if(visible){
@@ -270,15 +272,37 @@ fun LatestUpdate(
                 style = TextStyle(fontSize = fontSize, color = ColorProvider(Color.DarkGray, Color.LightGray))
             )
         }
-        Image(
-            provider = ImageProvider(R.drawable.refresh),
-            contentDescription = "Refresh",
-            modifier = GlanceModifier.padding(start = 3.dp).size(size = 20.dp).clickable(actionRunCallback<UpdateLmsData>()),
-            colorFilter = ColorFilter.tint(ColorProvider(Color.DarkGray, Color.LightGray))
-        )
+        if(isError){
+            ErrorRefreshButton()
+        }
+        else{
+            CompleteRefreshButton()
+        }
     }
 }
 
+
+
+@Composable
+fun ErrorRefreshButton(){
+    Image(
+        provider = ImageProvider(R.drawable.refresh),
+        contentDescription = "Refresh",
+        modifier = GlanceModifier.padding(start = 3.dp).size(size = 20.dp).clickable(actionRunCallback<ErrorLmsData>()),
+        colorFilter = ColorFilter.tint(ColorProvider(Color.DarkGray, Color.LightGray))
+    )
+}
+
+
+@Composable
+fun CompleteRefreshButton(){
+    Image(
+        provider = ImageProvider(R.drawable.refresh),
+        contentDescription = "Refresh",
+        modifier = GlanceModifier.padding(start = 3.dp).size(size = 20.dp).clickable(actionRunCallback<UpdateLmsData>()),
+        colorFilter = ColorFilter.tint(ColorProvider(Color.DarkGray, Color.LightGray))
+    )
+}
 
 
 object UpdateLmsData : ActionCallback {
@@ -288,11 +312,13 @@ object UpdateLmsData : ActionCallback {
         parameters: ActionParameters
     ) {
         try {
-            val sharedPreferences = context.getSharedPreferences("userData", Context.MODE_PRIVATE)
-            val time = sharedPreferences.getString("time", "00")
+            val sharedPreferences = context.getSharedPreferences(sharedName, Context.MODE_PRIVATE)
+            val time = sharedPreferences.getString("time", "00")!!
             val currentTime = SimpleDateFormat("MM.dd HH:mm").format(System.currentTimeMillis())
 
-            if(time!! != currentTime){
+            //Error상태일 때, 동기화한 시간이 기록되면 1분이 지날 때까지 갱신해도 에러상태가 유지됨
+            //동기화 시, editor로 time에 시간이 기록되고, 에러상태의 내용이 위젯이 기록되기 때문
+            if(time != currentTime){
                 val workRequest = OneTimeWorkRequestBuilder<LmsWorker>().build()
                 WorkManager.getInstance(context).enqueue(workRequest)   //worker 실행
 
@@ -307,6 +333,35 @@ object UpdateLmsData : ActionCallback {
             } else {
                 LmsWidget().update(context, glanceId)
             }
+        } catch (e: Exception){
+            Log.e("ActionCallback에러", "에러 내용: ${e.message}")
+        }
+    }
+}
+
+
+
+
+object ErrorLmsData : ActionCallback {
+    override suspend fun onAction(
+        context: Context,
+        glanceId: GlanceId,
+        parameters: ActionParameters
+    ) {
+        try {
+            val sharedPreferences = context.getSharedPreferences(sharedName, Context.MODE_PRIVATE)
+
+            val workRequest = OneTimeWorkRequestBuilder<LmsWorker>().build()
+            WorkManager.getInstance(context).enqueue(workRequest)   //worker 실행
+
+            val editor = sharedPreferences.edit()
+            editor.putString("time", SimpleDateFormat("MM.dd HH:mm").format(System.currentTimeMillis()))
+            editor.apply()
+
+            runBlocking {
+                delay(3000)
+            }
+            LmsWidget().update(context, glanceId)
         } catch (e: Exception){
             Log.e("ActionCallback에러", "에러 내용: ${e.message}")
         }

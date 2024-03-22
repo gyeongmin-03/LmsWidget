@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.akj.lmswidget.glance.LmsRepo
+import com.akj.lmswidget.glance.sharedName
 import com.akj.lmswidget.ui.theme.DarkBlue
 import com.akj.lmswidget.ui.theme.LmsWidgetTheme
 import kotlinx.coroutines.CoroutineScope
@@ -59,7 +60,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val shared = getSharedPreferences("userData", MODE_PRIVATE)
+        val shared = getSharedPreferences(sharedName, MODE_PRIVATE)
         val defaultLogin = shared.getBoolean("login", false)
 
         setContent {
@@ -244,7 +245,7 @@ fun isCorrect(id: String, pwd : String, context : Context) : Boolean{
 }
 
 
-private fun performLogin(id: String, pwd: String, editor: SharedPreferences.Editor, command: () -> Unit, context: Context) {
+private fun performLogin(id: String, pwd: String, editor: Editor, command: () -> Unit, context: Context) {
     CoroutineScope(Dispatchers.IO).launch {
         val isSuccess = isSucceedLogin(id, pwd)
         withContext(Dispatchers.Main) {
@@ -253,7 +254,7 @@ private fun performLogin(id: String, pwd: String, editor: SharedPreferences.Edit
                 editor.putString("pwd", pwd)
                 editor.putBoolean("login", true)
                 command()
-                editor.commit()
+                editor.apply()
             } else{
                 Toast.makeText(context, "로그인에 실패하였습니다.", Toast.LENGTH_LONG).show()
             }

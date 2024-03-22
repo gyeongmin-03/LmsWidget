@@ -6,8 +6,10 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import java.text.SimpleDateFormat
 
+val errorStr = "Error : 다시 시도해주세요"
 
 object WidgetStateHelper {
+    //여기에 변수를 title0이 errorStr인지 확인하는 불린 변수를 추가하여 반환시키는 방법. save함수나 get함수에서 변수값을 변경시킬 예정
     fun save(prefs : MutablePreferences, state : LmsTop5){
         prefs[stringPreferencesKey("title0")] = state.first.title
         prefs[stringPreferencesKey("subjt0")] = state.first.subjt
@@ -45,7 +47,7 @@ object WidgetStateHelper {
 
 
     fun getState(prefs : Preferences) : LmsTop5 {
-        val title0 = prefs[stringPreferencesKey("title0")] ?: "Error : 다시 시도해주세요"
+        val title0 = prefs[stringPreferencesKey("title0")] ?: errorStr
         val subjt0 = prefs[stringPreferencesKey("subjt0")] ?: ""
         val dDay0 = prefs[stringPreferencesKey("dDay0")] ?: ""
         val date0 = prefs[stringPreferencesKey("date0")] ?: ""

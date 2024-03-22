@@ -7,6 +7,8 @@ import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 
+const val sharedName = "userData"
+
 class LmsWorker(
     private val context: Context,
     workerParam : WorkerParameters
@@ -16,7 +18,7 @@ class LmsWorker(
     override suspend fun doWork(): Result {
         val manager = GlanceAppWidgetManager(context)
         val glanceIds = manager.getGlanceIds(LmsWidget::class.java)
-        val shared = context.getSharedPreferences("userData", Context.MODE_PRIVATE)
+        val shared = context.getSharedPreferences(sharedName, Context.MODE_PRIVATE)
 
         return try {
             setWidgetState(glanceIds, LmsRepo.getLmsData(shared))
