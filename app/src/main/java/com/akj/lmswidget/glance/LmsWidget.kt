@@ -263,7 +263,7 @@ fun LatestRefreshRow(
     myData: LmsTop5,
     visible : Boolean = true
 ){
-    val isError = myData.first.title == errorStr
+//    val isError = myData.first.title == errorStr
 
     Row(modifier = modifier, horizontalAlignment = alignment){
         Text(time, style = TextStyle(fontSize = fontSize, color = ColorProvider(Color.DarkGray, Color.LightGray)))
@@ -272,15 +272,18 @@ fun LatestRefreshRow(
                 style = TextStyle(fontSize = fontSize, color = ColorProvider(Color.DarkGray, Color.LightGray))
             )
         }
-        if(isError){
-            ErrorRefreshButton()
-        }
-        else{
-            CompleteRefreshButton()
-        }
+//        if(isError){
+//            ErrorRefreshButton()
+//        }
+//        else{
+//            CompleteRefreshButton()
+//        }
     }
 }
 
+fun isError(str : String) : Boolean{
+    return str == errorStr
+}
 
 
 @Composable
